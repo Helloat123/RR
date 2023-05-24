@@ -1,0 +1,11 @@
+int i;
+int j;
+for (i=2;i<=100;i++)
+{
+	flag=true;
+	for (j=2;j*j<=i;j++)
+	{
+		if (i%j==0) flag=false;
+	};
+	if (flag==true) write i;
+};

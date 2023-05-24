@@ -1,0 +1,12 @@
+int a;
+int b;
+int t;
+read a;
+read b;
+while (a!=b)
+{
+	t=a;
+	a=b%a;
+	b=t;
+};
+write a;
