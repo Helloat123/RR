@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-//#include "y.tab.h"
+#include "y.tab.h"
 int lineno=1;	
 %}
 
@@ -55,170 +55,165 @@ FALSE false
 	}
 {TRUE} {
 	printf("get boolean value : %s\n",yytext);
-	//return TRUE;
+	return TRUE;
 	}
 {FALSE} {
 	printf("get boolean value : %s\n",yytext);
-	//return FALSE;
+	return FALSE;
 	}
 {INT} {
 	printf("get type : %s\n",yytext);
-	//return INT;
+	return INT;
 	}
 {BOOL} {
 	printf("get type : %s\n",yytext);
-	//return BOOL;
+	return BOOL;
 	}
 {CONST} {
 	printf("get type : %s\n",yytext);
-	//return CONST;
+	return CONST;
 	}
 {IF} {
 	printf("get keyword : %s\n",yytext);
-	//return IF;
+	return IF;
 	}
 {ELSE} {
 	printf("get keyword : %s\n",yytext);
-	//return ELSE;
+	return ELSE;
 	}
 {WHILE} {
 	printf("get keyword : %s\n",yytext);
-	//return WHILE;
+	return WHILE;
 	}
 {DO} {
 	printf("get keyword : %s\n",yytext);
-	//return DO;
+	return DO;
 	}
 {FOR} {
 	printf("get keyword : %s\n",yytext);
-	//return FOR;
+	return FOR;
 	}
 {REPEAT} {
 	printf("get keyword : %s\n",yytext);
-	//return REPEAT;
+	return REPEAT;
 	}
 {UNTIL} {
 	printf("get keyword : %s\n",yytext);
-	//return UNTIL;
+	return UNTIL;
 	}
 {WRITE} {
 	printf("get keyword : %s\n",yytext);
-	//return WRITE;
+	return WRITE;
 	}
 {READ} {
 	printf("get keyword : %s\n",yytext);
-	//return READ;
+	return READ;
 	}
 {PLUS} {
 	printf("get operator : %s\n",yytext);
-	//return PLUS;
+	return PLUS;
 	}
 {MINUS} {
 	printf("get operator : %s\n",yytext);
-	//return MINUS;
+	return MINUS;
 	}
 {TIMES} {
 	printf("get operator : %s\n",yytext);
-	//return TIMES;
+	return TIMES;
 	}
 {COMPLEMENT} {
 	printf("get operator : %s\n",yytext);
-	//return COMPLEMENT;
+	return COMPLEMENT;
 	}
 {XOR} {
 	printf("get operator : %s\n",yytext);
-	//return XOR;
+	return XOR;
 	}
 {DIVIDES} {
 	printf("get operator : %s\n",yytext);
-	//return DIVIDES;
+	return DIVIDES;
 	}
 {ODD} {
 	printf("get operator : %s\n",yytext);
-	//return ODD;
+	return ODD;
 	}
 {SPLUS} {
 	printf("get operator : %s\n",yytext);
-	//return SPLUS;
+	return SPLUS;
 	}
 {SMINUS} {
 	printf("get operator : %s\n",yytext);
-	//return SMINUS;
+	return SMINUS;
 	}
 {RELOP} {
 	printf("get relop : %s\n",yytext);
-	//yylval.name = strdup(yytext);
-	//return RELOP;
+	yylval.name = strdup(yytext);
+	return RELOP;
 	}
 {ASSIGN} {
 	printf("get assign symbol : %s\n",yytext);
-	//return ASSIGN;
+	return ASSIGN;
 	}
 {OR} {
 	printf("get symbol or: %s\n",yytext);
-	//return OR;
+	return OR;
 	}
 {AND} {
 	printf("get symbol and: %s\n",yytext);
-	//return AND;
+	return AND;
 	}
 {NOT} {
 	printf("get symbol : %s\n",yytext);
-	//return NOT;
+	return NOT;
 	}
 {SEMI} {
 	printf("get symbol : %s\n",yytext);
-	//return SEMI;
+	return SEMI;
 	}
 {COLON} {
 	printf("get symbol : %s\n",yytext);
-	//return COLON;
+	return COLON;
 	}
 {LP} {
 	printf("get bracket : %s\n",yytext);
-	//return LP;
+	return LP;
 	}
 {RP} {
 	printf("get bracket : %s\n",yytext);
-	//return RP;
+	return RP;
 	}
 {LB} {
 	printf("get bracket : %s\n",yytext);
-	//return LB;
+	return LB;
 	}
 {RB} {
 	printf("get bracket : %s\n",yytext);
-	//return RB;
+	return RB;
 	}
 {LAN} {
 	printf("get symbol : %s\n",yytext);
-	//return LAN;
+	return LAN;
 	}
 {RAN} {
 	printf("get symbol : %s\n",yytext);
-	//return RAN;
+	return RAN;
 	}
 {NUM} {
 	printf("get number : %s\n",yytext);
 	double temp;
 	sscanf(yytext, "%lf", &temp);
-	//yylval.var = temp;
-	//return NUM;
+	yylval.var = temp;
+	return NUM;
 	}
 {ID} {
-	//yylval.name = strdup(yytext);
+	yylval.name = strdup(yytext);
 	printf("get identifier : %s\n",yytext);
-	//return ID;
+	return ID;
 	}
 {BLANK} {
 	
 	}
 %%
-int main()
-{
-	yylex();
-	return 0;
-}
 int yywrap()
 {
 	return 1;

@@ -1016,7 +1016,7 @@ YY_RULE_SETUP
 #line 148 "rr.lex"
 {
 	printf("get relop : %s\n",yytext);
-	//yylval.name = strdup(yytext);
+	yylval.name = strdup(yytext);
 	//return RELOP;
 	}
 	YY_BREAK
@@ -1123,7 +1123,7 @@ YY_RULE_SETUP
 	printf("get number : %s\n",yytext);
 	double temp;
 	sscanf(yytext, "%lf", &temp);
-	//yylval.var = temp;
+	yylval.var = temp;
 	//return NUM;
 	}
 	YY_BREAK
@@ -1131,7 +1131,7 @@ case 39:
 YY_RULE_SETUP
 #line 208 "rr.lex"
 {
-	//yylval.name = strdup(yytext);
+	yylval.name = strdup(yytext);
 	printf("get identifier : %s\n",yytext);
 	//return ID;
 	}
