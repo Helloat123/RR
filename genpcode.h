@@ -16,62 +16,54 @@ struct idtable{
 	int addr;
 };
 struct idtable table[TABLE_SIZE+1];
-void enter(enum object,enum object_t);
-
+int table_cnt=0;
 struct instruction{
 	enum oprt f;
-	int l;
+	int l;//l for call development. also value of const
 	int a;
-	int v;
-	enum object_t type;
-
 };
-
 struct data{
 	int value;
 	enum object_t type;
 };
-
-struct instruction code[CXMAX+1];//程序存储器，存储解释生成的中间代码
-int cx;//记录程序条数
-
-int base(int l, int b, struct data s[STACKSIZE+1]){//b和s在interpret中定义的，这里也要传参
-	int rt;
-	rt = b;
-	while(l > 0){
-		rt = (int)s[rt].value;
-		l = l-1;
+int code_cnt=0;
+char* id;
+void enter(enum object k, enum object_t t){
+	table_cnt++;
+	strcpy(table[table_cnt].name,id);
+	table[table_cnt].kind=k;
+	table[table_cnt].type=t;
+	table[table_cnt].addr=table_cnt+2;
+	table[table_cnt].value=0;//默认值是0
+}
+int position(char* tid){
+	strcpy(table[0].name,tid);//如果return的是0说明没找到
+	for(int i=table_cnt; i>=0;i--){
+		if (strcmp(table[i].name, tid)==0)
+			return i;
 	}
-	return rt;
+	return -1;
 }
-
-void pcode_error(char* msg){
-	printf("pcode error:%s\n", msg);
-	exit(1);
+void assignv(int t, double val){
+	table[t].value = val;
 }
-
-void gen(enum oprt f, int l, int a, enum object_t type){
-	if(cx > CXMAX) printf("program too long!");
-	code[cx].f = f;
-	code[cx].l = l;
-	code[cx].a = a;
-	code[cx].type = type;
-	cx++;
+double getv(int t){
+	if(t > 0)
+		return table[t].value;
+	return -999999; 
 }
-void genplus(enum oprt f, int l, int a, enum object_t type, int v){//为lit专门使用的命令生成代码
-	if(cx > CXMAX)
-		printf("program too long!");
-	code[cx].f = f;
-	code[cx].l = l;
-	code[cx].a = a;
-	code[cx].v = v;
-	code[cx].type = type;
-	cx++;
+int getaddr(int t){
+	if(t > 0)
+		return table[t].addr;
+	return -999999; 
 }
-
-void printpcode(){
-	int i;
-	for(i = 0; i < cx; i++) 
-		printf("%8d:%s, %d, %d, %d\n",i, oprtname[code[i].f]], code[i].l, code[i].a, code[i].type);
+int gettype(int t){
+	if(t > 0)
+		return table[t].type;
+	return -1; 
 }
+int judgeeq(int i, double d){
+	return ((d - i <= EPSINON && i <= d) || (0 <= i-d && i- d <= EPSINON) || (0 <= d  && d <= EPSINON) || (0 >= d && i >= -EPSINON));
+}
+void gen(enum oprt f, int l, int a);
 #endif
