@@ -1,0 +1,29 @@
+{
+	int x;
+	int y;
+	bool b;
+	const int a=5;
+	const bool c=true;
+	read x;
+	read y;
+	if (c)
+	{
+		x=x^y*(2+3)/5-7;
+		b=true;
+		while (b!=false&&5==2+3&&ODD 3)
+		{
+			y--;
+			if (y<=0) b=false;
+		};
+	};
+	do 
+	{
+		b=true;
+		b=false;
+	}while(b);
+	repeat
+	{
+		b=true;
+		b=false;
+	}until(!b);
+}
