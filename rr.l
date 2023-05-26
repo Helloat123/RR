@@ -3,7 +3,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "y.tab.h"
+#include "rr.h"
+#ifdef debug
+	#define dpr printf
+#else
+	#define dpr(...)
+#endif
+
+	
 int lineno=1;	
 %}
 
@@ -31,7 +38,6 @@ OR [|][|]
 AND [&][&]
 XOR [\^]
 NOT [!]
-COLON [:]
 SPLUS [+][+]
 SMINUS [-][-]
 SEMI [;]
@@ -39,8 +45,6 @@ LP \(
 RP \)
 LB \{
 RB \}
-LAN [/][*]
-RAN [*][/]
 LETTER [a-zA-Z]
 DIGIT [0-9]
 NUM {DIGIT}+
@@ -51,163 +55,151 @@ TRUE true
 FALSE false
 %%
 {ANNO} {
-	printf("get annotation : %s\n",yytext);
+	dpr("get annotation : %s\n",yytext);
 	}
 {TRUE} {
-	printf("get boolean value : %s\n",yytext);
+	dpr("get boolean value : %s\n",yytext);
 	return TRUE;
 	}
 {FALSE} {
-	printf("get boolean value : %s\n",yytext);
+	dpr("get boolean value : %s\n",yytext);
 	return FALSE;
 	}
 {INT} {
-	printf("get type : %s\n",yytext);
+	dpr("get type : %s\n",yytext);
 	return INT;
 	}
 {BOOL} {
-	printf("get type : %s\n",yytext);
+	dpr("get type : %s\n",yytext);
 	return BOOL;
 	}
 {CONST} {
-	printf("get type : %s\n",yytext);
+	dpr("get type : %s\n",yytext);
 	return CONST;
 	}
 {IF} {
-	printf("get keyword : %s\n",yytext);
+	dpr("get keyword : %s\n",yytext);
 	return IF;
 	}
 {ELSE} {
-	printf("get keyword : %s\n",yytext);
+	dpr("get keyword : %s\n",yytext);
 	return ELSE;
 	}
 {WHILE} {
-	printf("get keyword : %s\n",yytext);
+	dpr("get keyword : %s\n",yytext);
 	return WHILE;
 	}
 {DO} {
-	printf("get keyword : %s\n",yytext);
+	dpr("get keyword : %s\n",yytext);
 	return DO;
 	}
 {FOR} {
-	printf("get keyword : %s\n",yytext);
+	dpr("get keyword : %s\n",yytext);
 	return FOR;
 	}
 {REPEAT} {
-	printf("get keyword : %s\n",yytext);
+	dpr("get keyword : %s\n",yytext);
 	return REPEAT;
 	}
 {UNTIL} {
-	printf("get keyword : %s\n",yytext);
+	dpr("get keyword : %s\n",yytext);
 	return UNTIL;
 	}
 {WRITE} {
-	printf("get keyword : %s\n",yytext);
+	dpr("get keyword : %s\n",yytext);
 	return WRITE;
 	}
 {READ} {
-	printf("get keyword : %s\n",yytext);
+	dpr("get keyword : %s\n",yytext);
 	return READ;
 	}
 {PLUS} {
-	printf("get operator : %s\n",yytext);
+	dpr("get operator : %s\n",yytext);
 	return PLUS;
 	}
 {MINUS} {
-	printf("get operator : %s\n",yytext);
+	dpr("get operator : %s\n",yytext);
 	return MINUS;
 	}
 {TIMES} {
-	printf("get operator : %s\n",yytext);
+	dpr("get operator : %s\n",yytext);
 	return TIMES;
 	}
 {COMPLEMENT} {
-	printf("get operator : %s\n",yytext);
+	dpr("get operator : %s\n",yytext);
 	return COMPLEMENT;
 	}
 {XOR} {
-	printf("get operator : %s\n",yytext);
+	dpr("get operator : %s\n",yytext);
 	return XOR;
 	}
 {DIVIDES} {
-	printf("get operator : %s\n",yytext);
+	dpr("get operator : %s\n",yytext);
 	return DIVIDES;
 	}
 {ODD} {
-	printf("get operator : %s\n",yytext);
+	dpr("get operator : %s\n",yytext);
 	return ODD;
 	}
 {SPLUS} {
-	printf("get operator : %s\n",yytext);
+	dpr("get operator : %s\n",yytext);
 	return SPLUS;
 	}
 {SMINUS} {
-	printf("get operator : %s\n",yytext);
+	dpr("get operator : %s\n",yytext);
 	return SMINUS;
 	}
 {RELOP} {
-	printf("get relop : %s\n",yytext);
+	dpr("get relop : %s\n",yytext);
 	yylval.name = strdup(yytext);
 	return RELOP;
 	}
 {ASSIGN} {
-	printf("get assign symbol : %s\n",yytext);
+	dpr("get assign symbol : %s\n",yytext);
 	return ASSIGN;
 	}
 {OR} {
-	printf("get symbol or: %s\n",yytext);
+	dpr("get symbol or: %s\n",yytext);
 	return OR;
 	}
 {AND} {
-	printf("get symbol and: %s\n",yytext);
+	dpr("get symbol and: %s\n",yytext);
 	return AND;
 	}
 {NOT} {
-	printf("get symbol : %s\n",yytext);
+	dpr("get symbol : %s\n",yytext);
 	return NOT;
 	}
 {SEMI} {
-	printf("get symbol : %s\n",yytext);
+	dpr("get symbol : %s\n",yytext);
 	return SEMI;
 	}
-{COLON} {
-	printf("get symbol : %s\n",yytext);
-	return COLON;
-	}
 {LP} {
-	printf("get bracket : %s\n",yytext);
+	dpr("get bracket : %s\n",yytext);
 	return LP;
 	}
 {RP} {
-	printf("get bracket : %s\n",yytext);
+	dpr("get bracket : %s\n",yytext);
 	return RP;
 	}
 {LB} {
-	printf("get bracket : %s\n",yytext);
+	dpr("get bracket : %s\n",yytext);
 	return LB;
 	}
 {RB} {
-	printf("get bracket : %s\n",yytext);
+	dpr("get bracket : %s\n",yytext);
 	return RB;
 	}
-{LAN} {
-	printf("get symbol : %s\n",yytext);
-	return LAN;
-	}
-{RAN} {
-	printf("get symbol : %s\n",yytext);
-	return RAN;
-	}
 {NUM} {
-	printf("get number : %s\n",yytext);
+	dpr("get number : %s\n",yytext);
 	double temp;
-	sscanf(yytext, "%lf", &temp);
+	sscanf(yytext,"%lf",&temp);
 	yylval.var = temp;
 	return NUM;
 	}
 {ID} {
-	yylval.name = strdup(yytext);
-	printf("get identifier : %s\n",yytext);
+	yylval.name=strdup(yytext);
+	dpr("get identifier : %s\n",yytext);
 	return ID;
 	}
 {BLANK} {

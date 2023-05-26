@@ -1,7 +1,16 @@
 rr
+genpcode.o
 rr.c
 pcode.h
 table.h
+y.output
+y.tab.h
+y.tab.c
+lex.yy.c
+rr.yy.c
+rr.yy.o
+rr.output
+rr.h
 
 # Prerequisites
 *.d

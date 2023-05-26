@@ -1,0 +1,17 @@
+OPR 0,0  return
+1 neg
+2 add
+3 minus
+4 multiply
+5 divide
+6 odd
+8 equal
+9 not equal
+10 less than
+11 greater or equal
+12 greater than
+13 less or equal
+14 complement
+15 xor
+16 and
+17 or
