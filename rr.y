@@ -23,6 +23,7 @@
 %token <name> ID RELOP
 %token INT BOOL CONST IF ELSE WHILE DO FOR REPEAT UNTIL WRITE READ PLUS MINUS TIMES DIVIDES COMPLEMENT ODD XOR SPLUS SMINUS ASSIGN OR AND NOT SEMI LP RP LB RB LETTER DIGIT BLANK ANNO TRUE FALSE
 %type <var> aterm aexpr afactor bexpr bterm bfactor rel
+%left LOWER_THAN_ELSE
 %%
 	program:{
 		gen(jmp,0,1);
@@ -107,26 +108,26 @@
 			}
 			else if (table[t].type!=bool_t) 
 			{
-				strcpy (error_info,"");
+				strcpy(error_info,"");
 				sprintf(error_info,"The identifier %s and the expression is not the same type!",$1);
 				yyerror(error_info);
 			}
 			gen(sto,0,getaddr(t));
 		}
 		else{
-			strcpy (error_info,"");
+			strcpy(error_info,"");
 			sprintf(error_info,"The variable %s does not exist!",$1);
 			yyerror(error_info);
 		}
 	}|
 	IF LP bexpr RP {
-		//if (<bexpr>) <stmt>
+		//if (<bexpr>) <stmt> else <stmt>
 		jmpadd[ja_cnt++]=code_cnt;
 		gen(jpc,0,0);
-	}stmt {
+	}stmt{
 		jmpadd[ja_cnt++]=code_cnt;
 		gen(jmp,0,0);
-	}elses SEMI|
+	}elses|
 	WHILE {
 		//while (<bexpr>) <stmt>
 		jmpadd[ja_cnt++]=code_cnt;
@@ -139,60 +140,30 @@
 		ja_cnt-=2;
 	}SEMI|
 	FOR LP stmt{
-		//need to rewrite
-		//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		//for (<stmt>;<bexpr>;<stmt>) <stmt>;
-		/*
-		int t = position($3);
-		if(t > 0){
-			if(table[t].kind != variable)
-				yyerror("this identifier should be a variable!");
-			else if(table[t].type == 1){
-				if(!(judgeeq(1,$5)||judgeeq(0,$5))) {
-					yyerror("this bool variable cannot be assigned by number excepts 1 and 0");
-				}
-				else gen(sto,0,getaddr(t),bool_t);
-			}
-			else gen(sto,0,getaddr(t),gettype(t));
-		}
-		else yyerror("this variable don't exists.");
-		jmpadd[ja_cnt] = cx;
-		ja_cnt+=1;
-		*/
+		//for (<stmt><bexpr>;<stmt>) <stmt>;
+		jmpadd[ja_cnt++]=code_cnt;
 	}bexpr SEMI{
-		/*
-		gen(jpc,0,0,int_t);//不满足跳到stmt后结束循环
-		gen(jmp,0,0,int_t);//否则执行stmt
-		jmpadd[ja_cnt] = cx;//注意gen和cx[cxcount]语句的先后，此时存储的是jmp后的那一条语句的位置。
-		ja_cnt+=1; 
-	}selfop {
-		gen(jmp,0,jmpadd[ja_cnt-2],int_t);//跳到第二个表达式前
-		jmpadd[ja_cnt] = cx;
-		ja_cnt+=1;
-		code[jmpadd[ja_cnt-2]-1].a = cx;
-		*/
+		jmpadd[ja_cnt++]=code_cnt;
+		gen(jpc,0,0);
+		jmpadd[ja_cnt++]=code_cnt;
 	}stmt{
-
+		gen(jmp,0,jmpadd[ja_cnt-3]);
 	}RP stmt{
-		/*
-		int temp;
-		//跳到第二个表达式后
-		gen(jmp,0,jmpadd[ja_cnt-2],int_t);
-		code[jmpadd[ja_cnt-2]-2].a = cx;
-		ja_cnt -= 3;
-		*/
+		gen(jmp,0,jmpadd[ja_cnt-1]);
+		code[jmpadd[ja_cnt-2]].a=code_cnt;
+		ja_cnt-=3;
 	}|
 	DO {
 		//do <stmt> while (<bexpr>)
 		jmpadd[ja_cnt++]=code_cnt;
 	}LB stmts RB WHILE LP bexpr RP {
+		gen(opr,0,1);
 		gen(jpc,0,jmpadd[--ja_cnt]);
 	}SEMI|
 	REPEAT {
 		//repeat <stmt> until (<bexpr>)
 		jmpadd[ja_cnt++]=code_cnt;
 	}LB stmts RB UNTIL LP bexpr RP { 	
-		gen(opr,0,1);
 		gen(jpc,0,jmpadd[--ja_cnt]);
 	}SEMI|
 	WRITE aexpr SEMI{
@@ -232,23 +203,20 @@
 	}|
 	block/*%empty*/
 	;
-	
-	elses:ELSE{
-		//else <stmt>
+
+	elses:/*%empty*/{
+		code_cnt--;
+		code[jmpadd[ja_cnt--]].a=code_cnt;
+	}
+	|ELSE{
 		code[jmpadd[ja_cnt-2]].a=code_cnt;
 	}stmt{
 		code[jmpadd[ja_cnt-1]].a=code_cnt;
 		ja_cnt-=2;
-	}|
-	/*%empty*/{
-		//no else
-		ja_cnt-=1;
-		code[jmpadd[ja_cnt]].a=code_cnt;
-		ja_cnt-=1;
-		code[jmpadd[ja_cnt]].a=code_cnt;
 	}
-	;
 
+		
+		
 	aexpr: aexpr PLUS aterm{
 		gen(opr,0,2);
 	}|
