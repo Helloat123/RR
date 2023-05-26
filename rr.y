@@ -7,17 +7,9 @@
 	int yyerror(char*);
 	extern int yylineno;
 	extern char* yytext;
-	#define MAXLOOP 16
-	int cx1[MAXLOOP];//if的嵌套栈
-	int cx1count=0;
-	int cx2[MAXLOOP];//while的嵌套栈
-	int cx2count=0;
-	int cx3[MAXLOOP];//回标for语句中jpc用.每三条语句为一组，组内第一个记录for中第二个表达式之前的位置，第二个记录第二个表达式之后的位置，第三个记录stmt结束位置
-	int cx3count=0;
-	int cx4[MAXLOOP];//do while的嵌套栈
-	int cx4count=0;
-	int cx5[MAXLOOP];//repeat until的嵌套栈
-	int cx5count=0;
+	#define MAXLOOP 128 
+	int jmpadd[MAXLOOP];//栈
+	int ja_cnt=0;
 	char error_info[1024];
 	int var_cnt=0;
 %}
@@ -129,24 +121,24 @@
 	}|
 	IF LP bexpr RP {
 		//if (<bexpr>) <stmt>
-		cx1[cx1count++]=code_cnt;
+		jmpadd[ja_cnt++]=code_cnt;
 		gen(jpc,0,0);
 	}stmt {
-		cx1[cx1count++]=code_cnt;
+		jmpadd[ja_cnt++]=code_cnt;
 		gen(jmp,0,0);
 	}elses SEMI|
 	WHILE {
 		//while (<bexpr>) <stmt>
-		cx2[cx2count++]=code_cnt;
+		jmpadd[ja_cnt++]=code_cnt;
 	}LP bexpr RP {
-		cx2[cx2count++]=code_cnt;
+		jmpadd[ja_cnt++]=code_cnt;
 		gen(jpc,0,0);
 	}stmt{
-		gen(jmp,0,cx2[cx2count-2]);
-		code[cx2[cx2count-1]].a=code_cnt;
-		cx2count-=2;
+		gen(jmp,0,jmpadd[ja_cnt-2]);
+		code[jmpadd[ja_cnt-1]].a=code_cnt;
+		ja_cnt-=2;
 	}SEMI|
-	FOR LP ID ASSIGN aexpr SEMI{
+	FOR LP stmt{
 		//need to rewrite
 		//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		//for (<stmt>;<bexpr>;<stmt>) <stmt>;
@@ -164,55 +156,44 @@
 			else gen(sto,0,getaddr(t),gettype(t));
 		}
 		else yyerror("this variable don't exists.");
-		cx3[cx3count] = cx;
-		cx3count+=1;
+		jmpadd[ja_cnt] = cx;
+		ja_cnt+=1;
 		*/
-	}rel SEMI {
+	}bexpr SEMI{
 		/*
 		gen(jpc,0,0,int_t);//不满足跳到stmt后结束循环
 		gen(jmp,0,0,int_t);//否则执行stmt
-		cx3[cx3count] = cx;//注意gen和cx[cxcount]语句的先后，此时存储的是jmp后的那一条语句的位置。
-		cx3count+=1; 
+		jmpadd[ja_cnt] = cx;//注意gen和cx[cxcount]语句的先后，此时存储的是jmp后的那一条语句的位置。
+		ja_cnt+=1; 
 	}selfop {
-		gen(jmp,0,cx3[cx3count-2],int_t);//跳到第二个表达式前
-		cx3[cx3count] = cx;
-		cx3count+=1;
-		code[cx3[cx3count-2]-1].a = cx;
+		gen(jmp,0,jmpadd[ja_cnt-2],int_t);//跳到第二个表达式前
+		jmpadd[ja_cnt] = cx;
+		ja_cnt+=1;
+		code[jmpadd[ja_cnt-2]-1].a = cx;
+		*/
+	}stmt{
+
 	}RP stmt{
+		/*
 		int temp;
 		//跳到第二个表达式后
-		gen(jmp,0,cx3[cx3count-2],int_t);
-		code[cx3[cx3count-2]-2].a = cx;
-		cx3count -= 3;
+		gen(jmp,0,jmpadd[ja_cnt-2],int_t);
+		code[jmpadd[ja_cnt-2]-2].a = cx;
+		ja_cnt -= 3;
 		*/
 	}|
 	DO {
 		//do <stmt> while (<bexpr>)
-		/*
-		cx4[cx4count] = cx;
-		cx4count += 1;
-		*/
-	}stmt
-	WHILE LP bexpr RP { 	
-		/*
-		gen(jpc2,0,code[cx4[cx4count-1]].a,int_t);
-		cx4count -= 1;
-		int temp;
-		*/
+		jmpadd[ja_cnt++]=code_cnt;
+	}LB stmts RB WHILE LP bexpr RP {
+		gen(jpc,0,jmpadd[--ja_cnt]);
 	}SEMI|
 	REPEAT {
 		//repeat <stmt> until (<bexpr>)
-		/*
-		cx5[cx5count] = cx;
-		cx5count += 1;
-		*/
-	}stmt
-	UNTIL LP bexpr RP { 	
-		/*
-		gen(jpc,0,code[cx5[cx5count-1]].a,int_t);
-		cx5count -= 1;
-		int temp;
-		*/
+		jmpadd[ja_cnt++]=code_cnt;
+	}LB stmts RB UNTIL LP bexpr RP { 	
+		gen(opr,0,1);
+		gen(jpc,0,jmpadd[--ja_cnt]);
 	}SEMI|
 	WRITE aexpr SEMI{
 		//write <aexpr>
@@ -254,17 +235,17 @@
 	
 	elses:ELSE{
 		//else <stmt>
-		code[cx1[cx1count-2]].a=code_cnt;
+		code[jmpadd[ja_cnt-2]].a=code_cnt;
 	}stmt{
-		code[cx1[cx1count-1]].a=code_cnt;
-		cx1count-=2;
+		code[jmpadd[ja_cnt-1]].a=code_cnt;
+		ja_cnt-=2;
 	}|
 	/*%empty*/{
 		//no else
-		cx1count-=1;
-		code[cx1[cx1count]].a=code_cnt;
-		cx1count-=1;
-		code[cx1[cx1count]].a=code_cnt;
+		ja_cnt-=1;
+		code[jmpadd[ja_cnt]].a=code_cnt;
+		ja_cnt-=1;
+		code[jmpadd[ja_cnt]].a=code_cnt;
 	}
 	;
 
