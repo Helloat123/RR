@@ -40,6 +40,6 @@ void gen(enum oprt f, int l, int a){
 	//printf("%8d:%s, %d, %d\n",code_cnt++, oprtname[f], l, a);
 }
 void printpcode(){
-	for (int i=0;i<code_cnt;i++) printf("%5d:%s, %d, %d\n",i,oprtname[code[i].f],code[i].l,code[i].a);
+	for (int i=0;i<code_cnt;i++) printf("%5d : %s %d %d\n",i,oprtname[code[i].f],code[i].l,code[i].a);
 }
 

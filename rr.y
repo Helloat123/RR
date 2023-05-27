@@ -141,17 +141,20 @@
 	}SEMI|
 	FOR LP stmt{
 		//for (<stmt><bexpr>;<stmt>) <stmt>;
-		jmpadd[ja_cnt++]=code_cnt;
+		jmpadd[ja_cnt++]=code_cnt;//-4, where bexpr begin
 	}bexpr SEMI{
-		jmpadd[ja_cnt++]=code_cnt;
+		jmpadd[ja_cnt++]=code_cnt;//-3, jpc where bexpr end, to the end of for
 		gen(jpc,0,0);
-		jmpadd[ja_cnt++]=code_cnt;
+		jmpadd[ja_cnt++]=code_cnt;//-2, jmp where bexpr end, to the stmt of for
+		gen(jmp,0,0);
+		jmpadd[ja_cnt++]=code_cnt;//-1, where stmt in for begin
 	}stmt{
-		gen(jmp,0,jmpadd[ja_cnt-3]);
+		gen(jmp,0,jmpadd[ja_cnt-4]);
+		code[jmpadd[ja_cnt-2]].a=code_cnt;
 	}RP stmt{
 		gen(jmp,0,jmpadd[ja_cnt-1]);
-		code[jmpadd[ja_cnt-2]].a=code_cnt;
-		ja_cnt-=3;
+		code[jmpadd[ja_cnt-3]].a=code_cnt;
+		ja_cnt-=4;
 	}|
 	DO {
 		//do <stmt> while (<bexpr>)
@@ -206,7 +209,8 @@
 
 	elses:/*%empty*/{
 		code_cnt--;
-		code[jmpadd[ja_cnt--]].a=code_cnt;
+		ja_cnt--;
+		code[jmpadd[--ja_cnt]].a=code_cnt;
 	}
 	|ELSE{
 		code[jmpadd[ja_cnt-2]].a=code_cnt;
@@ -336,7 +340,6 @@
 		else yyerror("wrong relop type\n");
 	 }
 	 ;
-
 %%
 int iferror=0;
 int main(int argc, char *argv[])

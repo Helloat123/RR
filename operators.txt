@@ -1,5 +1,5 @@
 OPR 0,0  return
-1 neg
+1 not
 2 add
 3 minus
 4 multiply
