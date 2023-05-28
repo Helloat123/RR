@@ -10,12 +10,12 @@
 	{
 		x=x^y*(2+3)/5-7;
 		b=true;
-		while (b!=false&&5==2+3&&ODD 3)
+		while (b&&2==5-3&&odd 35)
 		{
 			y--;
 			if (y<=0) b=false;
-		};
-	};
+		}
+	}
 	do 
 	{
 		b=true;

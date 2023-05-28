@@ -1,0 +1,16 @@
+{
+	int x;
+	int y;
+	int res;
+	const int mod=131131;
+	res=1;
+	read x;
+	read y;
+	while (y>0)
+	{
+		if (odd y) res=res*x%mod;
+		y=y/2;
+		x=x*x%mod;
+	}
+	write res;
+}

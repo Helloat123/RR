@@ -138,7 +138,7 @@
 		gen(jmp,0,jmpadd[ja_cnt-2]);
 		code[jmpadd[ja_cnt-1]].a=code_cnt;
 		ja_cnt-=2;
-	}SEMI|
+	}|
 	FOR LP stmt{
 		//for (<stmt><bexpr>;<stmt>) <stmt>;
 		jmpadd[ja_cnt++]=code_cnt;//-4, where bexpr begin

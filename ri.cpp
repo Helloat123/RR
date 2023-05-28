@@ -183,7 +183,7 @@ int main(int argc,char **argv)
 	if (argc>1&&strcmp(argv[1],"-f")==0) freopen(argv[2],"r",stdin),infile=true;
 	while (getline(cin,s))
 	{
-f<<s<<endl;
+		f<<s<<endl;
 		inst temp=getcontent(s);
 		code.push_back(temp);
 		if (temp.a==opr&&temp.b==0&&temp.c==0) break;
@@ -195,10 +195,10 @@ f<<s<<endl;
 		cin.sync();
 	}
 	cerr<<"done"<<endl;
-f<<"got pcode"<<endl;
+	f<<"got pcode"<<endl;
 	while (getline(cin,s))
 	{
-f<<"got "<<s<<endl;
+		f<<"got "<<s<<endl;
 		if (s=="next"||s=="n"||s=="")
 		{
 			if (pc>=code.size()) 
