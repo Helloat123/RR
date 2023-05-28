@@ -93,6 +93,11 @@ void line()
 					sp--;
 				break;
 				case 5:
+					if (st[sp]==0)
+					{
+						cout<<"divide 0"<<endl;
+						return;
+					}
 					st[sp-1]=st[sp-1]/st[sp];
 					sp--;
 				break;
@@ -124,6 +129,11 @@ void line()
 					sp--;
 				break;
 				case 14:
+					if (st[sp]==0) 
+					{
+						cout<<"mod 0"<<endl;
+						return;
+					}
 					st[sp-1]=st[sp-1]%st[sp];
 					sp--;
 				break;

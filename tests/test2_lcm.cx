@@ -2,13 +2,15 @@
 	int a;
 	int b;
 	int t;
+	int p;
 	read a;
 	read b;
-	while (a!=b)
+	p=a*b;
+	while (a!=0)
 	{
 		t=a;
 		a=b%a;
 		b=t;
 	};
-	write a;
+	write p/b;
 }
