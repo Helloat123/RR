@@ -9,9 +9,6 @@
 #else
 	#define dpr(...)
 #endif
-
-	
-int lineno=1;	
 %}
 
 INT int
@@ -192,8 +189,8 @@ FALSE false
 	}
 {NUM} {
 	dpr("get number : %s\n",yytext);
-	double temp;
-	sscanf(yytext,"%lf",&temp);
+	int temp;
+	sscanf(yytext,"%d",&temp);
 	yylval.var = temp;
 	return NUM;
 	}
