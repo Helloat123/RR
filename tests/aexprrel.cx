@@ -1,0 +1,7 @@
+{
+	const int x=1;
+	int y;
+	y=3;
+	if (x*3-y==0) write 1;
+	else write 2;
+}

@@ -309,16 +309,7 @@
 	rel
 	;
 
-	rel: ID RELOP aexpr{
-		int t=position($1);
-		if (t>0) 
-		{
-			if (table[t].type!=int_t) yyerror("this variable don't have correct type.");		
-			if (table[t].kind==variable) gen(lod,0,getaddr(t));
-			else if (table[t].kind==constant) gen(lit,0,getv(t));
-			else yyerror("unknown error in rel");
-		}
-		else yyerror("this variable don't exists."); 	
+	rel: aexpr RELOP aexpr{
 		if (strcmp($2,"<")==0) gen(opr,0,10);
 		else if (strcmp($2,"<=")==0) gen(opr,0,13);
 		else if (strcmp($2,">")==0) gen(opr,0,12);
@@ -326,20 +317,10 @@
 		else if (strcmp($2,"==")==0) gen(opr,0,8);
 		else if (strcmp($2,"!=")==0) gen(opr,0,9);
 		else yyerror("wrong relop type\n");	
-	 }|
-	 NUM RELOP aexpr{
-		//num,relop,expr
-		gen(lit,0,$1);
-		if (strcmp($2,"<")==0) gen(opr,0,10);
-		else if (strcmp($2,"<=")==0) gen(opr,0,13);
-		else if (strcmp($2,">")==0) gen(opr,0,12);
-		else if (strcmp($2,">=")==0) gen(opr,0,11);
-		else if (strcmp($2,"==")==0) gen(opr,0,8);
-		else if (strcmp($2,"!=")==0) gen(opr,0,9);
-		else yyerror("wrong relop type\n");
-	 }
-	 ;
+	}
+	;
 %%
+
 int iferror=0;
 int main(int argc, char *argv[])
 {

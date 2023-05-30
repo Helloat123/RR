@@ -16,10 +16,11 @@ For Yacc:
 <bid> ∷= <ID>
 <stmts> ∷= <stmts> <stmt> | ε
 <stmt> ∷= <aid> = <aexpr>; | <bid> = <bexpr>; | if (<bexpr>) <stmt>; |  if (<bexpr>) <stmt> else <stmt>; | while (<bexpr>) <stmt>; | write <aexpr>; | read <aid>; | for (<stmt>;<bexpr>;<stmt>) <stmt>; | do <stmt> while (<bexpr>); | repeat <stmt> until (<bexpr>); | <aid>++; | <aid>--; |  <block>
-<aexpr> ∷= <aterm> + <aterm> | <aterm> - <aterm> | <aterm> ^ <aterm> | <aterm>
-<aterm> ∷= <afactor> * <afactor> | <afactor> / <afactor> | <afactor> % <afactor> | <afactor>
+<aexpr> ∷= <aexpr> + <aterm> | <aexpr> - <aterm> | <aexpr> ^ <aterm> | <aterm>
+<aterm> ∷= <aterm> * <afactor> | <aterm> / <afactor> | <aterm> % <afactor> | <afactor>
 <afactor> ∷= <aid> | NUM | (<aexpr>)
 <bexpr> ∷= <bexpr> || <bterm> | <bterm>
 <bterm> ∷= <bterm> && <bfactor> | <bfactor>
 <bfactor> ∷= <bid> | true | false | ! <bfactor> | ODD <aexpr> | (<bexpr>) | <rel>
-<rel> ∷= (<aid>|NUM) (< | <= | > | >= | == | !=) <aexpr>
+<rel> ∷= <aexpr> (< | <= | > | >= | == | !=) <aexpr>
+
