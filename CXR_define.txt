@@ -1,0 +1,25 @@
+For Lex:
+
+<ID>∷=<letter>|<ID><letter>|<ID><digit>
+<NUM>∷=<digit>|<NUM><digit>
+<letter>∷= a|b|…|z|A|B|…|Z
+<digit>∷=1|2|…|9|0
+
+
+For Yacc:
+
+<program> ∷= <block>
+<block> ∷= {<decls> <stmts>}
+<decls> ∷=<decls> <decl> | ε
+<decl> ∷= const int <aid> = <aexpr>; | const bool <bid> = <bexpr>; | <int <aid>; | bool <bid>;
+<aid> ∷= <ID>
+<bid> ∷= <ID>
+<stmts> ∷= <stmts> <stmt> | ε
+<stmt> ∷= <aid> = <aexpr>; | <bid> = <bexpr>; | if (<bexpr>) <stmt>; |  if (<bexpr>) <stmt> else <stmt>; | while (<bexpr>) <stmt>; | write <aexpr>; | read <aid>; | for (<stmt>;<bexpr>;<stmt>) <stmt>; | do <stmt> while (<bexpr>); | repeat <stmt> until (<bexpr>); | <aid>++; | <aid>--; |  <block>
+<aexpr> ∷= <aterm> + <aterm> | <aterm> - <aterm> | <aterm> ^ <aterm> | <aterm>
+<aterm> ∷= <afactor> * <afactor> | <afactor> / <afactor> | <afactor> % <afactor> | <afactor>
+<afactor> ∷= <aid> | NUM | (<aexpr>)
+<bexpr> ∷= <bexpr> || <bterm> | <bterm>
+<bterm> ∷= <bterm> && <bfactor> | <bfactor>
+<bfactor> ∷= <bid> | true | false | ! <bfactor> | ODD <aexpr> | (<bexpr>) | <rel>
+<rel> ∷= (<aid>|NUM) (< | <= | > | >= | == | !=) <aexpr>
