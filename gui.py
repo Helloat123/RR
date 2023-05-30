@@ -64,11 +64,11 @@ def get_input():
 root = tk.Tk()
 
 # code text
-cxcode = tk.Text(root, height=10, width=100)
+cxcode = tk.Text(root, height=8, width=100)
 cxcode.pack()
 
 # pcode text
-pcode = tk.Text(root, height=15, width=100)
+pcode = tk.Text(root, height=12, width=100)
 pcode.pack()
 
 # input text
@@ -76,7 +76,7 @@ inpu = tk.Entry(root,width=100)
 inpu.pack()
 
 # output text
-output = tk.Text(root,height=25,width=100)
+output = tk.Text(root,height=20,width=100)
 output.pack()
 
 # compile button

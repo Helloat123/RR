@@ -11,6 +11,6 @@
 		t=a;
 		a=b%a;
 		b=t;
-	};
+	}
 	write p/b;
 }
