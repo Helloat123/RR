@@ -1,0 +1,6 @@
+{
+	int x;
+	x=8;
+	write 8^x;
+	write 4^x;
+}
