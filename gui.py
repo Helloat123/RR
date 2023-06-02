@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import filedialog
 from subprocess import Popen, PIPE
 import select
 
@@ -47,7 +48,6 @@ def continue_run():
     command="continue\n"
     process.stdin.write(command)
     process.stdin.flush()
-    #root.after(100,read_output)
 
 def quit_ri():
     process.stdin.write("quit\n")
@@ -55,53 +55,79 @@ def quit_ri():
     output.delete('1.0',tk.END)
     pcode.delete('1.0',tk.END)
 
+
 def get_input():
     input_value=inpu.get()
     process.stdin.write(input_value+'next\n')
     process.stdin.flush()
 
+def load_file():
+    global filepath
+    filepath=filedialog.askopenfilename()
+    with open(filepath,'r') as file:
+        content=file.read()
+        cxcode.delete('1.0',tk.END)
+        cxcode.insert(tk.END,content)
+
+def save_file():
+    global filepath
+    if filepath=="":
+        filepath=filedialog.asksaveasfilename(defaultextension=".cx")
+    with open(filepath,'w') as file:
+        content=cxcode.get('1.0',tk.END)
+        file.write(content)
 
 root = tk.Tk()
-
+filepath=""
 # code text
 cxcode = tk.Text(root, height=8, width=100)
-cxcode.pack()
 
 # pcode text
 pcode = tk.Text(root, height=12, width=100)
-pcode.pack()
 
 # input text
 inpu = tk.Entry(root,width=100)
-inpu.pack()
 
 # output text
 output = tk.Text(root,height=20,width=100)
-output.pack()
+
+# load file button
+load_file=tk.Button(root,text="load file",command=load_file)
+
+# save file button
+save_file=tk.Button(root,text="save file",command=save_file)
 
 # compile button
-comp = tk.Button(root, text="Compile", command=execute_rr)
-comp.pack()
+comp = tk.Button(root, text="compile", command=execute_rr)
 
 # run button
 run = tk.Button(root,text="run",command=execute_ri)
-run.pack()
-
-# input button
-inp=tk.Button(root,text="input",command=get_input)
-inp.pack()
 
 # next button
 nxt = tk.Button(root,text="next",command=next_line)
-nxt.pack()
+
+# input button
+inp=tk.Button(root,text="input",command=get_input)
 
 # continue button
 con = tk.Button(root,text="continue",command=continue_run)
-con.pack()
 
 # quit button
 qui = tk.Button(root,text="quit ri",command=quit_ri)
-qui.pack()
+
+cxcode.pack()
+pcode.pack()
+inpu.pack()
+output.pack()
+
+load_file.pack(side='left')
+save_file.pack(side='left')
+comp.pack(side='left')
+run.pack(side='left')
+nxt.pack(side='left')
+inp.pack(side='left')
+con.pack(side='left')
+qui.pack(side='left')
 
 root.mainloop()
 
