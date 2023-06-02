@@ -5,4 +5,5 @@
 	{
 		x++;
 	}while(x<=10);
+	write x;
 }

@@ -1,0 +1,12 @@
+{
+	int i;
+	int j
+	bool flag;
+	for (i=2;i<=100;i++;)
+	{
+		flag=true;
+		for (j=2;i>=j*j;j++;)
+			if (0==i%j) {flag=false}
+		if (flag) write i;
+	}
+}
