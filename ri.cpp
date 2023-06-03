@@ -113,19 +113,19 @@ void line()
 					sp--;
 				break;
 				case 10:
-					st[sp-1]=(st[sp]<st[sp-1]);
+					st[sp-1]=(st[sp-1]<st[sp]);
 					sp--;
 				break;
 				case 11:
-					st[sp-1]=(st[sp]>=st[sp-1]);
+					st[sp-1]=(st[sp-1]>=st[sp]);
 					sp--;
 				break;
 				case 12:
-					st[sp-1]=(st[sp]>st[sp-1]);
+					st[sp-1]=(st[sp-1]>st[sp]);
 					sp--;
 				break;
 				case 13:
-					st[sp-1]=(st[sp]<=st[sp-1]);
+					st[sp-1]=(st[sp-1]<=st[sp]);
 					sp--;
 				break;
 				case 14:

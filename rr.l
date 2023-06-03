@@ -56,11 +56,13 @@ FALSE false
 	}
 {TRUE} {
 	dpr("get boolean value : %s\n",yytext);
-	return TRUE;
+	yylval.var=1;
+	return NUM;
 	}
 {FALSE} {
 	dpr("get boolean value : %s\n",yytext);
-	return FALSE;
+	yylval.var=0;
+	return NUM;
 	}
 {INT} {
 	dpr("get type : %s\n",yytext);
@@ -68,7 +70,7 @@ FALSE false
 	}
 {BOOL} {
 	dpr("get type : %s\n",yytext);
-	return BOOL;
+	return INT;
 	}
 {CONST} {
 	dpr("get type : %s\n",yytext);

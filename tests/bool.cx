@@ -1,0 +1,11 @@
+{
+	bool a;
+	a=true;
+	if (a) write 1;
+	a=false;
+	if (a) write 2;
+	a=1+3;
+	if (a) write 3;
+	a=!a;
+	if (a) write 4;
+}

@@ -21,8 +21,8 @@
 %start program
 %token <var> NUM
 %token <name> ID RELOP
-%token INT BOOL CONST IF ELSE WHILE DO FOR REPEAT UNTIL WRITE READ PLUS MINUS TIMES DIVIDES COMPLEMENT ODD XOR SPLUS SMINUS ASSIGN OR AND NOT SEMI LP RP LB RB LETTER DIGIT BLANK ANNO TRUE FALSE
-%type <var> aterm aexpr afactor bexpr bterm bfactor rel
+%token INT CONST IF ELSE WHILE DO FOR REPEAT UNTIL WRITE READ PLUS MINUS TIMES DIVIDES COMPLEMENT ODD XOR SPLUS SMINUS ASSIGN OR AND NOT SEMI LP RP LB RB LETTER DIGIT BLANK ANNO
+%type <var> term expr factor bexpr bterm bfactor rel
 %%
 	program:{
 		gen(jmp,0,1);
@@ -46,33 +46,18 @@
 		var_cnt++;
 		enter(variable,int_t); //into id table
 	}| 
-	BOOL ID SEMI{
-		id=$2;
-		var_cnt++;
-		enter(variable,bool_t);
-	}| 
 	CONST INT ID ASSIGN NUM SEMI{
 		id=$3;
 		temp_num=$5;
 		enter(constant,int_t);
-	}| 
-	CONST BOOL ID ASSIGN TRUE SEMI{
-		id=$3;
-		temp_num=1;
-		enter(constant,bool_t);
-	}|
-	CONST BOOL ID ASSIGN FALSE SEMI{
-		id=$3;
-		temp_num=0;
-		enter(constant,bool_t);
-	}
+	} 
 	;
 
 	stmts: stmts stmt|/*%empty*/
 	;
 
-	stmt: ID ASSIGN aexpr SEMI{
-		//<aid> = <aexpr>
+	stmt: ID ASSIGN bexpr SEMI{
+		//<id> = <expr>
 		int t=position($1);
 		if (t>0){
 			if (table[t].kind!=variable)
@@ -91,30 +76,6 @@
 		}
 		else{
 			strcpy (error_info,"");
-			sprintf(error_info,"The variable %s does not exist!",$1);
-			yyerror(error_info);
-		}
-	}|
-	ID ASSIGN bexpr SEMI{
-		//<bid> = <bexpr>
-		int t=position($1);
-		if (t>0){
-			if(table[t].kind!=variable)
-			{
-				strcpy (error_info,"");
-				sprintf(error_info,"The identifier %s must be a variable!",$1);
-				yyerror(error_info);
-			}
-			else if (table[t].type!=bool_t) 
-			{
-				strcpy(error_info,"");
-				sprintf(error_info,"The identifier %s and the expression is not the same type!",$1);
-				yyerror(error_info);
-			}
-			gen(sto,0,getaddr(t));
-		}
-		else{
-			strcpy(error_info,"");
 			sprintf(error_info,"The variable %s does not exist!",$1);
 			yyerror(error_info);
 		}
@@ -168,8 +129,8 @@
 	}LB stmts RB UNTIL LP bexpr RP { 	
 		gen(jpc,0,jmpadd[--ja_cnt]);
 	}SEMI|
-	WRITE aexpr SEMI{
-		//write <aexpr>
+	WRITE bexpr SEMI{
+		//write <expr>
 		gen(wri,0,0);
 	}|
 	READ ID SEMI{
@@ -220,34 +181,34 @@
 
 		
 		
-	aexpr: aexpr PLUS aterm{
+	expr: expr PLUS term{
 		gen(opr,0,2);
 	}|
-	aexpr MINUS aterm{
+	expr MINUS term{
 		gen(opr,0,3);
 	}|
-	aexpr XOR aterm{
+	expr XOR term{
 		gen(opr,0,15);
 	}|
-	aterm|
-	ID ASSIGN aexpr{
+	term|
+	ID ASSIGN expr{
 		yyerror("assign symbol do not have return value in CXR!");
 	}
 	;
 
-	aterm: aterm TIMES afactor{
+	term: term TIMES factor{
 		gen(opr,0,4);
 	}|
-	aterm DIVIDES afactor{
+	term DIVIDES factor{
 		gen(opr,0,5);
 	}|
-	aterm COMPLEMENT afactor{
+	term COMPLEMENT factor{
 		gen(opr,0,14);
 	}|
-	afactor
+	factor
 	;
 
-	afactor: ID{
+	factor: ID{
 		int t=position($1);
 		if (t>0) 
 		{
@@ -261,7 +222,7 @@
 	NUM{
 		gen(lit,0,$1);
 	}|
-	LP aexpr RP{
+	LP bexpr RP{
 		$$=$2;
 	}
 	;
@@ -281,35 +242,17 @@
 	bfactor
 	;
 
-	bfactor: ID{
-		int t=position($1);
-		if (t>0){
-			if (table[t].type!=bool_t) yyerror("this variable is not boolean type.");
-			else if (table[t].kind==variable) gen(lod,0,getaddr(t));
-			else if (table[t].kind==constant) gen(lit,0,getv(t));
-			else yyerror("unknown error in bfactor");
-		}
-		else yyerror("this variable don't exists"); 	
-	}|
-	TRUE{
-		gen(lit,0,1);
-	}|
-	FALSE{
-		gen(lit,0,0);
-	}|
+	bfactor: 
 	NOT bfactor{
 		gen(opr,0,1);
 	}|
-	ODD afactor{
+	ODD factor{
 		gen(opr,0,6); 	
-	}|
-	LP bexpr RP{
-		$$=$2;
 	}|
 	rel
 	;
 
-	rel: aexpr RELOP aexpr{
+	rel: expr RELOP expr{
 		if (strcmp($2,"<")==0) gen(opr,0,10);
 		else if (strcmp($2,"<=")==0) gen(opr,0,13);
 		else if (strcmp($2,">")==0) gen(opr,0,12);
@@ -317,7 +260,8 @@
 		else if (strcmp($2,"==")==0) gen(opr,0,8);
 		else if (strcmp($2,"!=")==0) gen(opr,0,9);
 		else yyerror("wrong relop type\n");	
-	}
+	}|
+	expr
 	;
 %%
 
