@@ -1,0 +1,9 @@
+{
+	int #x;
+	int y;
+	x=&y;
+	y=3;
+	write #x;
+	y=4;
+	write #x;
+}

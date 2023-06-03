@@ -6,8 +6,8 @@
 #define CODE_MAX_SIZE 4096
 
 enum object{constant, variable, prozedure};
-enum object_t{int_t, bool_t};
-enum oprt{lit, lod, sto, inn, jmp, jpc, opr, red,wri};
+enum object_t{int_t, bool_t,ptr_t};
+enum oprt{lit, lod, sto, inn, jmp, jpc, opr, red,wri,lod1,gta};
 struct idtable{
 	char name[ID_MAX_LENGTH+1];
 	enum object kind;

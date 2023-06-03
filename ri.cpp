@@ -7,8 +7,9 @@
 using namespace std;
 string s;
 unsigned int pc=0;
-const string oprtname[10]={"LIT","LOD","STO","INT","JMP","JPC","OPR","RED","WRI"};
-enum oprt{lit, lod, sto, inn, jmp, jpc, opr, red,wri};
+const int opnum=11;
+const string oprtname[opnum]={"LIT","LOD","STO","INT","JMP","JPC","OPR","RED","WRI","LOD1","GTA"};
+enum oprt{lit, lod, sto, inn, jmp, jpc, opr, red,wri,lod1,gta};
 struct inst//instruction
 {
 	oprt a;
@@ -24,7 +25,7 @@ inst getcontent(const string &s)
 	char rubbish;
 	string oprname;
 	ss>>trash>>rubbish>>oprname>>res.b>>res.c;
-	for (int i=0;i<9;i++) if (oprtname[i]==oprname) {res.a=(oprt)i;break;}
+	for (int i=0;i<opnum;i++) if (oprtname[i]==oprname) {res.a=(oprt)i;break;}
 	return res;
 }
 int st[4096],sp=-1;
@@ -44,7 +45,7 @@ int getv(const int &x)
 {
 	return st[x];
 }
-void line()
+int line()
 {
 	int now=pc;
 	pc++;
@@ -96,7 +97,7 @@ void line()
 					if (st[sp]==0)
 					{
 						cout<<"divide 0"<<endl;
-						return;
+						return 0;
 					}
 					st[sp-1]=st[sp-1]/st[sp];
 					sp--;
@@ -132,7 +133,7 @@ void line()
 					if (st[sp]==0) 
 					{
 						cout<<"mod 0"<<endl;
-						return;
+						return -1;
 					}
 					st[sp-1]=st[sp-1]%st[sp];
 					sp--;
@@ -149,6 +150,8 @@ void line()
 					st[sp-1]=(st[sp-1]||st[sp]);
 					sp--;
 				break;
+				case 18:
+					return -1;
 				default:
 					throw -1;
 			}
@@ -160,9 +163,16 @@ void line()
 			cout<<"write:"<<top()<<endl;
 			pop();
 		break;
+		case lod1:
+			st[sp]=st[st[sp]];
+		break;
+		case gta:
+			push(i.c);
+		break;
 		default:
 			throw -1;
 	}
+	return 0;
 }
 ofstream f("ri.log");
 void pstack()
@@ -209,7 +219,7 @@ int main(int argc,char **argv)
 			cerr<<"executing "<<pc<<':'<<oprtname[code[pc].a]<<' '<<code[pc].b<<' '<<code[pc].c<<endl;
 			f<<"executing "<<pc<<':'<<oprtname[code[pc].a]<<' '<<code[pc].b<<' '<<code[pc].c<<endl;
 			cout<<"executing "<<pc<<':'<<oprtname[code[pc].a]<<' '<<code[pc].b<<' '<<code[pc].c<<endl;
-			line();
+			if (line()==-1) pc=code.size();
 			pstack();
 		}
 		else if (s=="continue"||s=="c"||s=="con")
@@ -219,7 +229,10 @@ int main(int argc,char **argv)
 				cout<<"DONE! input quit to quit"<<endl;
 				continue;
 			}
-			while (pc<code.size()) line();	
+			while (pc<code.size()) 
+			{
+				if (line()==-1) pc=code.size();	
+			}
 		}
 		else if (s=="quit"||s=="q")
 		{

@@ -50,6 +50,14 @@ BLANK [ \n\t]+
 ANNO [/][*][^(*/)]*[*][/]
 TRUE true
 FALSE false
+SWITCH switch
+CASE case
+BREAK break
+CONTINUE continue
+EXIT exit
+ADDR &
+PTR #
+
 %%
 {ANNO} {
 	dpr("get annotation : %s\n",yytext);
@@ -58,24 +66,40 @@ FALSE false
 	dpr("get boolean value : %s\n",yytext);
 	yylval.var=1;
 	return NUM;
-	}
+}
 {FALSE} {
 	dpr("get boolean value : %s\n",yytext);
 	yylval.var=0;
 	return NUM;
-	}
+}
+{ADDR} {
+	dpr("get addr sym\n");
+	return ADDR;
+}
+{PTR} {
+	dpr("get pointer sym\n");
+	return PTR;
+}
+{SWITCH} {
+	dpr("get switch\n");
+	return SWITCH;
+}
+{CASE} {
+	dpr("get case\n");
+	return CASE;
+}
 {INT} {
 	dpr("get type : %s\n",yytext);
 	return INT;
-	}
+}
 {BOOL} {
 	dpr("get type : %s\n",yytext);
 	return INT;
-	}
+}
 {CONST} {
 	dpr("get type : %s\n",yytext);
 	return CONST;
-	}
+}
 {IF} {
 	dpr("get keyword : %s\n",yytext);
 	return IF;

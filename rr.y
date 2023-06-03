@@ -21,7 +21,7 @@
 %start program
 %token <var> NUM
 %token <name> ID RELOP
-%token INT CONST IF ELSE WHILE DO FOR REPEAT UNTIL WRITE READ PLUS MINUS TIMES DIVIDES COMPLEMENT ODD XOR SPLUS SMINUS ASSIGN OR AND NOT SEMI LP RP LB RB LETTER DIGIT BLANK ANNO
+%token INT CONST IF ELSE WHILE DO FOR REPEAT UNTIL WRITE READ PLUS MINUS TIMES DIVIDES COMPLEMENT ODD XOR SPLUS SMINUS ASSIGN OR AND NOT SEMI LP RP LB RB LETTER DIGIT BLANK ANNO SWITCH CASE BREAK CONTINUE EXIT ADDR PTR
 %type <var> term expr factor bexpr bterm bfactor rel
 %%
 	program:{
@@ -46,6 +46,11 @@
 		var_cnt++;
 		enter(variable,int_t); //into id table
 	}| 
+	INT PTR ID SEMI{
+		id=$3;
+		var_cnt++;
+		enter(variable,ptr_t);
+	}|
 	CONST INT ID ASSIGN NUM SEMI{
 		id=$3;
 		temp_num=$5;
@@ -66,12 +71,14 @@
 				sprintf(error_info,"The identifier %s must be a variable!",$1);
 				yyerror(error_info);
 			}
+			/*
 			else if (table[t].type!=int_t) 
 			{
 				strcpy (error_info,"");
 				sprintf(error_info,"The identifier %s and the expression is not the same type!",$1);
 				yyerror(error_info);
 			}
+			*/
 			gen(sto,0,getaddr(t));
 		}
 		else{
@@ -164,6 +171,10 @@
 		gen(opr,0,3);
 		gen(sto,0,getaddr(t));
 	}|
+	EXIT{
+		//exit
+		gen(opr,0,18);
+	}
 	block/*%empty*/
 	;
 
@@ -212,8 +223,9 @@
 		int t=position($1);
 		if (t>0) 
 		{
-			if (table[t].type==bool_t) yyerror("type error");
-			else if (table[t].kind==variable) gen(lod,0,getaddr(t));
+			//if (table[t].type==bool_t) yyerror("type error");
+			//else 
+			if (table[t].kind==variable) gen(lod,0,getaddr(t));
 			else if (table[t].kind==constant) gen(lit,0,getv(t));
 			else yyerror("unknown error in afactor");
 		}
@@ -224,6 +236,15 @@
 	}|
 	LP bexpr RP{
 		$$=$2;
+	}|
+	PTR ID{
+		int t=position($2);
+		gen(lod,0,getaddr(t));
+		gen(lod1,0,0);
+	}|
+	ADDR ID{
+		int t=position($2);
+		gen(gta,0,getaddr(t));
 	}
 	;
 
