@@ -5,15 +5,16 @@
 #define TABLE_SIZE 1024
 #define CODE_MAX_SIZE 4096
 
-enum object{constant, variable, prozedure};
-enum object_t{int_t, bool_t,ptr_t};
-enum oprt{lit, lod, sto, inn, jmp, jpc, opr, red,wri,lod1,gta};
+enum object{constant, variable, procedure};
+enum object_t{int_t, bool_t,ptr_t,void_t};
+enum oprt{lit, lod, sto, inn, jmp, jpc, opr, red,wri,lod1,gta,cal};
 struct idtable{
 	char name[ID_MAX_LENGTH+1];
 	enum object kind;
 	enum object_t type;
 	int value;
 	int addr;
+	int level;
 };
 struct idtable table[TABLE_SIZE+1];
 struct instruction{
@@ -22,7 +23,7 @@ struct instruction{
 	int a;
 };
 struct instruction code[CODE_MAX_SIZE];
-extern int code_cnt,temp_num;
+extern int code_cnt,temp_num,level,var_cnt,nowprocedure,table_cnt;
 extern char* id;
 
 void enter(enum object k, enum object_t t);

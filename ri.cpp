@@ -7,9 +7,9 @@
 using namespace std;
 string s;
 unsigned int pc=0;
-const int opnum=11;
-const string oprtname[opnum]={"LIT","LOD","STO","INT","JMP","JPC","OPR","RED","WRI","LOD1","GTA"};
-enum oprt{lit, lod, sto, inn, jmp, jpc, opr, red,wri,lod1,gta};
+const int opnum=12;
+const string oprtname[opnum]={"LIT","LOD","STO","INT","JMP","JPC","OPR","RED","WRI","LOD1","GTA","CAL"};
+enum oprt{lit, lod, sto, inn, jmp, jpc, opr, red,wri,lod1,gta,cal};
 struct inst//instruction
 {
 	oprt a;
@@ -28,7 +28,7 @@ inst getcontent(const string &s)
 	for (int i=0;i<opnum;i++) if (oprtname[i]==oprname) {res.a=(oprt)i;break;}
 	return res;
 }
-int st[4096],sp=-1;
+int st[4096],sp=-1,ss=0;
 int top()
 {
 	return st[sp];
@@ -52,14 +52,19 @@ int line()
 	inst i=code[now];
 	switch (i.a)
 	{
+		int pos;
 		case lit:
 			push(i.c);
 		break;
 		case lod:
-			push(getv(i.c));
+			pos=ss;
+			for (int x=0;x<i.b;x++) pos=st[pos];
+			push(getv(pos+i.c));
 		break;
 		case sto:
-			st[i.c]=top();
+			pos=ss;
+			for (int x=0;x<i.b;x++) pos=st[pos];
+			st[pos+i.c]=top();
 			pop();
 		break;
 		case inn:
@@ -76,7 +81,15 @@ int line()
 			switch (i.c)
 			{
 				case 0:
-					cerr<<"end with OPR 0 0"<<endl;
+					if (pc==code.size()) 
+					{
+						cerr<<"main end with OPR 0 0"<<endl;
+						return -1;
+					}
+					else cerr<<"function end with OPR 0 0"<<endl;
+					sp=ss-1;
+					pc=st[ss+1];
+					ss=st[ss];
 				break;
 				case 1:
 					st[sp]=!st[sp];
@@ -167,7 +180,17 @@ int line()
 			st[sp]=st[st[sp]];
 		break;
 		case gta:
-			push(i.c);
+			pos=ss;
+			for (int x=0;x<i.b;x++) pos=st[pos];
+			push(pos+i.c);
+		break;
+		case cal:
+			st[sp+1]=ss;
+			//push(ss);
+			ss=sp+1;
+			st[sp+2]=pc;
+			pc=i.c;
+			//push(
 		break;
 		default:
 			throw -1;
@@ -177,15 +200,15 @@ int line()
 ofstream f("ri.log");
 void pstack()
 {
-	f<<"stack{"<<endl;
 	cout<<"stack{"<<endl;
 	for (int i=sp;i>=0;i--)
 	{
-		f<<i<<":"<<st[i]<<endl;
 		cout<<i<<":"<<st[i]<<endl;
 	}
 	cout<<"}stack"<<endl;
-	f<<"}stack"<<endl;
+	cout<<"sp="<<sp<<endl;
+	cout<<"pc="<<pc<<endl;
+	cout<<"ss="<<ss<<endl;
 }
 int main(int argc,char **argv)
 {
@@ -194,9 +217,10 @@ int main(int argc,char **argv)
 	while (getline(cin,s))
 	{
 		f<<s<<endl;
+		if (s=="run"||s=="r") break;
 		inst temp=getcontent(s);
 		code.push_back(temp);
-		if (temp.a==opr&&temp.b==0&&temp.c==0) break;
+		//if (temp.a==opr&&temp.b==0&&temp.c==0) break;
 	}
 	if (infile)
 	{

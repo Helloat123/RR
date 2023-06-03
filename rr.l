@@ -57,6 +57,7 @@ CONTINUE continue
 EXIT exit
 ADDR &
 PTR #
+VOID void
 
 %%
 {ANNO} {
@@ -88,6 +89,10 @@ PTR #
 	dpr("get case\n");
 	return CASE;
 }
+{VOID} {
+	dpr("start of function");
+	return VOID;
+	   }
 {INT} {
 	dpr("get type : %s\n",yytext);
 	return INT;

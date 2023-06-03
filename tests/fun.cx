@@ -1,0 +1,14 @@
+int x;
+void f
+{
+	int a;
+	a=1;
+	write a;
+	write x;
+	write a+x;
+}
+{
+	x=3;
+	f;
+	write x;
+}

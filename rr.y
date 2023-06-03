@@ -11,57 +11,124 @@
 	int jmpadd[MAXLOOP];//栈
 	int ja_cnt=0;
 	char error_info[1024];
+	int nowprocedure=0;
+	int tablestart=0;
 	int var_cnt=0;
+	int level=0;
+	int vv=0;
 %}
 %union
 {
 	int var;
 	char* name;
+//%type <var> term expr factor bexpr bterm bfactor rel
 }
 %start program
 %token <var> NUM
 %token <name> ID RELOP
-%token INT CONST IF ELSE WHILE DO FOR REPEAT UNTIL WRITE READ PLUS MINUS TIMES DIVIDES COMPLEMENT ODD XOR SPLUS SMINUS ASSIGN OR AND NOT SEMI LP RP LB RB LETTER DIGIT BLANK ANNO SWITCH CASE BREAK CONTINUE EXIT ADDR PTR
-%type <var> term expr factor bexpr bterm bfactor rel
+%token INT CONST IF ELSE WHILE DO FOR REPEAT UNTIL WRITE READ PLUS MINUS TIMES DIVIDES COMPLEMENT ODD XOR SPLUS SMINUS ASSIGN OR AND NOT SEMI LP RP LB RB LETTER DIGIT BLANK ANNO SWITCH CASE BREAK CONTINUE EXIT ADDR PTR VOID
 %%
-	program:{
-		gen(jmp,0,1);
+	program:defs
+	{
+		id="__main__";
+		enter(procedure,void_t);
+		gen(jmp,0,0);
+		vv=var_cnt;
+	}functions{
+		int t=position("__main__");
+		code[table[t].addr].a=code_cnt;
+		var_cnt=vv;
 	}block{
 		gen(opr,0,0);
 	}
 	;
+	
+	functions:functions function|;
 
-	block: LB{
-	}decls{
-		if (var_cnt) gen(inn,0,var_cnt);
+	function:VOID ID{
+		id=$2;
+		level++;
+		enter(procedure,void_t);
+		table[nowprocedure].addr=code_cnt;
+		gen(inn,0,2);//return address;
+		//1,0 for RA
+		//gen(sto,1,0);//get RA;
+		//gen(sto,1,1);//get Link;
+		tablestart=table_cnt;
+		var_cnt=2;
+	}block{
+		level--;
+		table_cnt=tablestart;
 		var_cnt=0;
-	}stmts RB
+		gen(opr,0,0);
+	}
 	;
 
-	decls: decls decl|/*%empty*/
-	;
+	defs: defs def|;
 
-	decl: INT ID SEMI{
+	def:
+	ID SEMI{
+		int t=position($1);
+		if (t>0)
+		{
+			if (table[t].kind!=procedure) yyerror("this is not a procedure");
+			gen(cal,0,table[t].addr);
+		}
+		else yyerror("no such procedure");
+	}|
+	INT ID SEMI{
 		id=$2;
 		var_cnt++;
 		enter(variable,int_t); //into id table
+		gen(inn,0,1);
 	}| 
 	INT PTR ID SEMI{
 		id=$3;
 		var_cnt++;
 		enter(variable,ptr_t);
+		gen(inn,0,1);
 	}|
 	CONST INT ID ASSIGN NUM SEMI{
 		id=$3;
 		temp_num=$5;
 		enter(constant,int_t);
-	} 
+	}
+	;
+
+	block: LB stmts RB
 	;
 
 	stmts: stmts stmt|/*%empty*/
 	;
 
-	stmt: ID ASSIGN bexpr SEMI{
+	stmt: 
+	ID SEMI{
+		int t=position($1);
+		if (t>0)
+		{
+			if (table[t].kind!=procedure) yyerror("this is not a procedure");
+			gen(cal,0,table[t].addr);
+		}
+		else yyerror("no such procedure");
+	}|
+	INT ID SEMI{
+		id=$2;
+		var_cnt++;
+		enter(variable,int_t); //into id table
+		gen(inn,0,1);
+	}| 
+	INT PTR ID SEMI{
+		id=$3;
+		var_cnt++;
+		enter(variable,ptr_t);
+		gen(inn,0,1);
+	}|
+	CONST INT ID ASSIGN NUM SEMI{
+		id=$3;
+		temp_num=$5;
+		enter(constant,int_t);
+	}|
+	ID ASSIGN bexpr SEMI{
 		//<id> = <expr>
 		int t=position($1);
 		if (t>0){
@@ -71,18 +138,10 @@
 				sprintf(error_info,"The identifier %s must be a variable!",$1);
 				yyerror(error_info);
 			}
-			/*
-			else if (table[t].type!=int_t) 
-			{
-				strcpy (error_info,"");
-				sprintf(error_info,"The identifier %s and the expression is not the same type!",$1);
-				yyerror(error_info);
-			}
-			*/
-			gen(sto,0,getaddr(t));
+			gen(sto,level-table[t].level,getaddr(t));
 		}
 		else{
-			strcpy (error_info,"");
+			strcpy(error_info,"");
 			sprintf(error_info,"The variable %s does not exist!",$1);
 			yyerror(error_info);
 		}
@@ -143,7 +202,7 @@
 	READ ID SEMI{
 		//read x
 		int t=position($2);
-		if (t>0) gen(red,gettype(t),getaddr(t));
+		if (t>0) gen(red,level-table[t].level,getaddr(t));
 		else yyerror("The variable does not exists!");
 	}|
 	ID SPLUS SEMI{
@@ -151,25 +210,25 @@
 		int t=position($1);
 		if (t>0) 
 		{
-			if (table[t].kind==variable) gen(lod,0,getaddr(t));
+			if (table[t].kind==variable) gen(lod,level-table[t].level,getaddr(t));
 			else yyerror("It is not a variable");
 		}
 		else yyerror("The variable does not exists!"); 		
 		gen(lit,0,1);
 		gen(opr,0,2);
-		gen(sto,0,getaddr(t));
+		gen(sto,level-table[t].level,getaddr(t));
 	}|
 	ID SMINUS SEMI{
 		//x--
 		int t=position($1);
 		if (t>0) 
 		{
-			if (table[t].kind==variable) gen(lod,0,getaddr(t));
+			if (table[t].kind==variable) gen(lod,level-table[t].level,getaddr(t));
 			else yyerror("It is not a variable");
 		}
 		gen(lit,0,1);
 		gen(opr,0,3);
-		gen(sto,0,getaddr(t));
+		gen(sto,level-table[t].level,getaddr(t));
 	}|
 	EXIT{
 		//exit
@@ -225,8 +284,8 @@
 		{
 			//if (table[t].type==bool_t) yyerror("type error");
 			//else 
-			if (table[t].kind==variable) gen(lod,0,getaddr(t));
-			else if (table[t].kind==constant) gen(lit,0,getv(t));
+			if (table[t].kind==variable) gen(lod,level-table[t].level,getaddr(t));
+			else if (table[t].kind==constant) gen(lit,table[t].level,getv(t));
 			else yyerror("unknown error in afactor");
 		}
 		else yyerror("this identifier don't exists."); 		
@@ -235,16 +294,16 @@
 		gen(lit,0,$1);
 	}|
 	LP bexpr RP{
-		$$=$2;
+		//$$=$2;
 	}|
 	PTR ID{
 		int t=position($2);
-		gen(lod,0,getaddr(t));
+		gen(lod,level-table[t].level,getaddr(t));
 		gen(lod1,0,0);
 	}|
 	ADDR ID{
 		int t=position($2);
-		gen(gta,0,getaddr(t));
+		gen(gta,level-table[t].level,getaddr(t));
 	}
 	;
 

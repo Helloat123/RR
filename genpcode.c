@@ -1,17 +1,32 @@
 #include "genpcode.h"
 #include <stdio.h>
 #include <string.h>
-const char oprtname[15][5]={"LIT", "LOD", "STO", "INT", "JMP", "JPC", "OPR","RED","WRI","LOD1","GTA"};
+const char oprtname[15][5]={"LIT", "LOD", "STO", "INT", "JMP", "JPC", "OPR","RED","WRI","LOD1","GTA","CAL"};
 char *id;
 int table_cnt=0,code_cnt=0,temp_num=0;
 void enter(enum object k, enum object_t t){
-	table_cnt++;
-	strcpy(table[table_cnt].name,id);
-	table[table_cnt].kind=k;
-	table[table_cnt].type=t;
-	table[table_cnt].addr=table_cnt-1;
-	table[table_cnt].value=temp_num;
-	temp_num=0;
+	if (k==variable||k==constant)
+	{
+		table_cnt++;
+		strcpy(table[table_cnt].name,id);
+		table[table_cnt].kind=k;
+		table[table_cnt].type=t;
+		table[table_cnt].level=level;
+		table[table_cnt].addr=var_cnt-1;//table_cnt-1;
+		table[table_cnt].value=temp_num;
+		temp_num=0;
+	}
+	else if (k==procedure)
+	{
+		table_cnt++;
+		strcpy(table[table_cnt].name,id);
+		table[table_cnt].kind=k;
+		table[table_cnt].type=t;
+		table[table_cnt].addr=code_cnt;
+		table[table_cnt].value=0;
+		table[table_cnt].level=level;
+		nowprocedure=table_cnt;
+	}
 }
 int position(char* tid){
 	strcpy(table[0].name,tid);//如果return的是0说明没找到
