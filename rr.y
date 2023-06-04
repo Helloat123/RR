@@ -50,12 +50,9 @@
 		level++;
 		enter(procedure,void_t);
 		table[nowprocedure].addr=code_cnt;
-		gen(inn,0,2);//return address;
-		//1,0 for RA
-		//gen(sto,1,0);//get RA;
-		//gen(sto,1,1);//get Link;
+		gen(inn,0,3);//DL SL RA
 		tablestart=table_cnt;
-		var_cnt=2;
+		var_cnt=3;
 	}block{
 		level--;
 		table_cnt=tablestart;
@@ -67,15 +64,6 @@
 	defs: defs def|;
 
 	def:
-	ID SEMI{
-		int t=position($1);
-		if (t>0)
-		{
-			if (table[t].kind!=procedure) yyerror("this is not a procedure");
-			gen(cal,0,table[t].addr);
-		}
-		else yyerror("no such procedure");
-	}|
 	INT ID SEMI{
 		id=$2;
 		var_cnt++;
@@ -107,7 +95,7 @@
 		if (t>0)
 		{
 			if (table[t].kind!=procedure) yyerror("this is not a procedure");
-			gen(cal,0,table[t].addr);
+			gen(cal,level^1,table[t].addr);
 		}
 		else yyerror("no such procedure");
 	}|
@@ -233,7 +221,7 @@
 	EXIT{
 		//exit
 		gen(opr,0,18);
-	}
+	}|
 	block/*%empty*/
 	;
 

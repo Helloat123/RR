@@ -58,12 +58,12 @@ int line()
 		break;
 		case lod:
 			pos=ss;
-			for (int x=0;x<i.b;x++) pos=st[pos];
+			for (int x=0;x<i.b;x++) pos=st[pos+1];
 			push(getv(pos+i.c));
 		break;
 		case sto:
 			pos=ss;
-			for (int x=0;x<i.b;x++) pos=st[pos];
+			for (int x=0;x<i.b;x++) pos=st[pos+1];
 			st[pos+i.c]=top();
 			pop();
 		break;
@@ -88,7 +88,7 @@ int line()
 					}
 					else cerr<<"function end with OPR 0 0"<<endl;
 					sp=ss-1;
-					pc=st[ss+1];
+					pc=st[ss+2];
 					ss=st[ss];
 				break;
 				case 1:
@@ -181,14 +181,16 @@ int line()
 		break;
 		case gta:
 			pos=ss;
-			for (int x=0;x<i.b;x++) pos=st[pos];
+			for (int x=0;x<i.b;x++) pos=st[pos+1];
 			push(pos+i.c);
 		break;
 		case cal:
 			st[sp+1]=ss;
 			//push(ss);
+			if (i.b) st[sp+2]=ss;
+			else st[sp+2]=st[ss+1];
 			ss=sp+1;
-			st[sp+2]=pc;
+			st[sp+3]=pc;
 			pc=i.c;
 			//push(
 		break;

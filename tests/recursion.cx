@@ -1,0 +1,22 @@
+int deg;
+int x;
+int n;
+void f
+{
+	int xx;
+	write x;
+	if (deg<=n) {
+		xx=x;
+		x=x+x;
+		deg++;
+		f;
+		x=xx;
+		deg--;
+	}
+}
+{
+	deg=0;
+	x=1;
+	n=5;
+	f;
+}
