@@ -20,7 +20,7 @@ def execute_ri():
     global process
     process=Popen(command,stdin=PIPE,stdout=PIPE,stderr=PIPE,shell=True,text=True)
     if process.poll() is None: print("running");
-    process.stdin.write(input_value)
+    process.stdin.write(input_value+'run\n')
     process.stdin.flush()
     root.after(10,read_output)
 

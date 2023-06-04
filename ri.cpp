@@ -81,7 +81,7 @@ int line()
 			switch (i.c)
 			{
 				case 0:
-					if (pc==code.size()) 
+					if (pc>=code.size()) 
 					{
 						cerr<<"main end with OPR 0 0"<<endl;
 						return -1;
@@ -223,6 +223,7 @@ int main(int argc,char **argv)
 	while (getline(cin,s))
 	{
 		f<<s<<endl;
+		if (s=="") continue;
 		if (s=="run"||s=="r") break;
 		inst temp=getcontent(s);
 		code.push_back(temp);
@@ -234,7 +235,7 @@ int main(int argc,char **argv)
 		cin.clear();
 		cin.sync();
 	}
-	cerr<<"done"<<endl;
+	cout<<"got pcode"<<endl;
 	f<<"got pcode"<<endl;
 	while (getline(cin,s))
 	{
