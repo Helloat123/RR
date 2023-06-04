@@ -44,7 +44,7 @@
 	
 	functions:functions function|;
 
-	function:VOID ID{
+	function:VOID ID LP RP{
 		id=$2;
 		level++;
 		enter(procedure,void_t);
@@ -72,6 +72,18 @@
 		gen(inn,0,$4);
 		var_cnt+=$4;
 	}|
+	INT ID LM ID RM SEMI{
+		id=$2;
+		var_cnt++;
+		enter(variable,ptr_t);
+		int t=position($2);
+		gen(gta,level-table[t].level,getaddr(t)+1);
+		t=position($4);
+		if (t<0) yyerror("no such constant");
+		else if (table[t].kind!=constant) yyerror("it is not a constant");
+		gen(inn,0,getv(t));
+		var_cnt+=getv(t);
+	}|
 	INT ID SEMI{
 		id=$2;
 		var_cnt++;
@@ -93,7 +105,8 @@
 		id=$3;
 		temp_num=$5;
 		enter(constant,int_t);
-	}
+	}|
+	error SEMI
 	;
 
 	block: LB stmts RB
@@ -103,7 +116,7 @@
 	;
 
 	stmt: 
-	ID SEMI{
+	ID LP RP SEMI{
 		int t=position($1);
 		if (t>0)
 		{
@@ -111,6 +124,27 @@
 			gen(cal,level^1,table[t].addr);
 		}
 		else yyerror("no such procedure");
+	}|
+	INT ID LM NUM RM SEMI{
+		id=$2;
+		var_cnt++;
+		enter(variable,ptr_t);
+		int t=position($2);
+		gen(gta,level-table[t].level,getaddr(t)+1);
+		gen(inn,0,$4);
+		var_cnt+=$4;
+	}|
+	INT ID LM ID RM SEMI{
+		id=$2;
+		var_cnt++;
+		enter(variable,ptr_t);
+		int t=position($2);
+		gen(gta,level-table[t].level,getaddr(t)+1);
+		t=position($4);
+		if (t<0) yyerror("no such constant");
+		else if (table[t].kind!=constant) yyerror("it is not a constant");
+		gen(inn,0,getv(t));
+		var_cnt+=getv(t);
 	}|
 	INT ID SEMI{
 		id=$2;
@@ -264,7 +298,7 @@
 		//exit
 		gen(opr,0,18);
 	}|
-	block/*%empty*/
+	block|SEMI|error SEMI
 	;
 
 	elses:/*%empty*/{

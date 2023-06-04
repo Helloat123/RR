@@ -1,9 +1,10 @@
-int a[10];
-int b[10];
+const int array_size=10;
+int a[array_size];
+int b[array_size];
 int n;
 int l;
 int r;
-void merge_sort
+void merge_sort()
 {
 	if (r>l)
 	{
@@ -11,10 +12,10 @@ void merge_sort
 		int tr=r;
 		int mid=(l+r)/2;
 		r=mid;
-		merge_sort;
+		merge_sort();
 		r=tr;
 		l=mid+1;
-		merge_sort;
+		merge_sort();
 		l=tl;
 		r=tr;
 		int lh=l;
@@ -58,6 +59,6 @@ void merge_sort
 	l=1;
 	r=n;
 	for (int i=1;i<=n;i++;) read a[i];
-	merge_sort;
+	merge_sort();
 	for (i=1;i<=n;i++;) write a[i];
 }
