@@ -1,0 +1,63 @@
+int a[10];
+int b[10];
+int n;
+int l;
+int r;
+void merge_sort
+{
+	if (r>l)
+	{
+		int tl=l;
+		int tr=r;
+		int mid=(l+r)/2;
+		r=mid;
+		merge_sort;
+		r=tr;
+		l=mid+1;
+		merge_sort;
+		l=tl;
+		r=tr;
+		int lh=l;
+		int rh=mid+1;
+		for (int i=l;i<=r;i++;)
+		{
+			if (rh>r)
+			{
+				b[i]=a[lh];
+				lh++;
+			}
+			else if (lh>mid)
+			{
+				b[i]=a[rh];
+				rh++;
+			}
+			else if (a[lh]<a[rh])
+			{
+				b[i]=a[lh];
+				lh++;
+			}
+			else
+			{
+				b[i]=a[rh];
+				rh++;
+			}
+			/*
+			write 22222;
+			write i;
+			write b[i];
+			write lh;
+			write rh;
+			write 22222;
+			*/
+		}
+		for (i=l;i<=r;i++;) a[i]=b[i];
+	}
+}
+{
+	read n;
+	l=1;
+	r=n;
+	for (int i=1;i<=n;i++;) read a[i];
+	merge_sort;
+	for (i=1;i<=n;i++;) write a[i];
+}

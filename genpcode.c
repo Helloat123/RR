@@ -1,7 +1,7 @@
 #include "genpcode.h"
 #include <stdio.h>
 #include <string.h>
-const char oprtname[15][5]={"LIT", "LOD", "STO", "INT", "JMP", "JPC", "OPR","RED","WRI","LOD1","GTA","CAL","STO1"};
+const char oprtname[15][5]={"LIT", "LOD", "STO", "INT", "JMP", "JPC", "OPR","RED","WRI","LOD1","GTA","CAL","STO1","RED1"};
 char *id;
 int table_cnt=0,code_cnt=0,temp_num=0;
 void enter(enum object k, enum object_t t){

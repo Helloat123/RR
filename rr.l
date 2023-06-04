@@ -44,7 +44,7 @@ LM \[
 RM \]
 LB \{
 RB \}
-LETTER [a-zA-Z]
+LETTER [a-zA-Z_]
 DIGIT [0-9]
 NUM {DIGIT}+
 ID {LETTER}({LETTER}|{DIGIT})*

@@ -21,7 +21,6 @@
 {
 	int var;
 	char* name;
-//%type <var> term expr factor bexpr bterm bfactor rel
 }
 %start program
 %token <var> NUM
@@ -225,6 +224,16 @@
 		int t=position($2);
 		if (t>0) gen(red,level-table[t].level,getaddr(t));
 		else yyerror("The variable does not exists!");
+	}|
+	READ ID LM bexpr RM SEMI{
+		int t=position($2);
+		if (t>0)
+		{
+			gen(lod,level-table[t].level,getaddr(t));
+			gen(opr,0,2);
+			gen(red1,0,0);
+		}
+		else yyerror("The array does not exists!");
 	}|
 	ID SPLUS SEMI{
 		//x++

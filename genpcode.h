@@ -7,7 +7,7 @@
 
 enum object{constant, variable, procedure};
 enum object_t{int_t, bool_t,ptr_t,void_t};
-enum oprt{lit, lod, sto, inn, jmp, jpc, opr, red,wri,lod1,gta,cal,sto1};
+enum oprt{lit, lod, sto, inn, jmp, jpc, opr, red,wri,lod1,gta,cal,sto1,red1};
 struct idtable{
 	char name[ID_MAX_LENGTH+1];
 	enum object kind;
