@@ -40,6 +40,8 @@ SMINUS [-][-]
 SEMI [;]
 LP \(
 RP \)
+LM \[
+RM \]
 LB \{
 RB \}
 LETTER [a-zA-Z]
@@ -210,6 +212,14 @@ VOID void
 	dpr("get bracket : %s\n",yytext);
 	return RP;
 	}
+{LM} {
+	dpr("get bracket : %s\n",yytext);
+	return LM;
+	}
+{RM} {
+	dpr("get bracket : %s\n",yytext);
+	return RM;
+	 }
 {LB} {
 	dpr("get bracket : %s\n",yytext);
 	return LB;

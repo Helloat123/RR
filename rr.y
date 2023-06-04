@@ -26,7 +26,7 @@
 %start program
 %token <var> NUM
 %token <name> ID RELOP
-%token INT CONST IF ELSE WHILE DO FOR REPEAT UNTIL WRITE READ PLUS MINUS TIMES DIVIDES COMPLEMENT ODD XOR SPLUS SMINUS ASSIGN OR AND NOT SEMI LP RP LB RB LETTER DIGIT BLANK ANNO SWITCH CASE BREAK CONTINUE EXIT ADDR PTR VOID
+%token INT CONST IF ELSE WHILE DO FOR REPEAT UNTIL WRITE READ PLUS MINUS TIMES DIVIDES COMPLEMENT ODD XOR SPLUS SMINUS ASSIGN OR AND NOT SEMI LP RP LB RB LETTER DIGIT BLANK ANNO SWITCH CASE BREAK CONTINUE EXIT ADDR PTR VOID LM RM
 %%
 	program:defs
 	{
@@ -64,6 +64,15 @@
 	defs: defs def|;
 
 	def:
+	INT ID LM NUM RM SEMI{
+		id=$2;
+		var_cnt++;
+		enter(variable,ptr_t);
+		int t=position($2);
+		gen(gta,level-table[t].level,getaddr(t)+1);
+		gen(inn,0,$4);
+		var_cnt+=$4;
+	}|
 	INT ID SEMI{
 		id=$2;
 		var_cnt++;
@@ -133,6 +142,20 @@
 			sprintf(error_info,"The variable %s does not exist!",$1);
 			yyerror(error_info);
 		}
+	}|
+	ID LM bexpr RM ASSIGN{
+		int t=position($1);
+		if (t>0){
+			gen(lod,level-table[t].level,getaddr(t));
+			gen(opr,0,2);
+		}
+		else{
+			strcpy(error_info,"");
+			sprintf(error_info,"The variable %s does not exist!",$1);
+			yyerror(error_info);
+		}
+	}bexpr SEMI{
+		gen(sto1,0,0);
 	}|
 	IF LP bexpr RP {
 		//if (<bexpr>) <stmt> else <stmt>
@@ -292,6 +315,12 @@
 	ADDR ID{
 		int t=position($2);
 		gen(gta,level-table[t].level,getaddr(t));
+	}|
+	ID LM bexpr RM{
+		int t=position($1);
+		gen(lod,level-table[t].level,getaddr(t));
+		gen(opr,0,2);
+		gen(lod1,0,0);
 	}
 	;
 

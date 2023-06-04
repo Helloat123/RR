@@ -7,9 +7,9 @@
 using namespace std;
 string s;
 unsigned int pc=0;
-const int opnum=12;
-const string oprtname[opnum]={"LIT","LOD","STO","INT","JMP","JPC","OPR","RED","WRI","LOD1","GTA","CAL"};
-enum oprt{lit, lod, sto, inn, jmp, jpc, opr, red,wri,lod1,gta,cal};
+const int opnum=13;
+const string oprtname[opnum]={"LIT","LOD","STO","INT","JMP","JPC","OPR","RED","WRI","LOD1","GTA","CAL","STO1"};
+enum oprt{lit, lod, sto, inn, jmp, jpc, opr, red,wri,lod1,gta,cal,sto1};
 struct inst//instruction
 {
 	oprt a;
@@ -193,6 +193,10 @@ int line()
 			st[sp+3]=pc;
 			pc=i.c;
 			//push(
+		break;
+		case sto1:
+			st[st[sp-1]]=st[sp];
+			sp-=2;
 		break;
 		default:
 			throw -1;
