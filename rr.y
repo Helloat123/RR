@@ -79,6 +79,11 @@
 		enter(variable,int_t); //into id table
 		gen(inn,0,1);
 	}| 
+	INT ID ASSIGN bexpr SEMI{
+		id=$2;
+		var_cnt++;
+		enter(variable,int_t);
+	}|
 	INT PTR ID SEMI{
 		id=$3;
 		var_cnt++;
@@ -114,6 +119,11 @@
 		enter(variable,int_t); //into id table
 		gen(inn,0,1);
 	}| 
+	INT ID ASSIGN bexpr SEMI{
+		id=$2;
+		var_cnt++;
+		enter(variable,int_t);
+	}|
 	INT PTR ID SEMI{
 		id=$3;
 		var_cnt++;
