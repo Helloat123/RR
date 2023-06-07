@@ -4,4 +4,7 @@
 	y=3;
 	if (x*3-y==2+x-y) write 1;
 	else write 2;
+	if (1+2+3<3+2) write 3;
+	else write 4;
 }
+

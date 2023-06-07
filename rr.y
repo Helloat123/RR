@@ -186,6 +186,21 @@
 			yyerror(error_info);
 		}
 	}|
+	PTR ID{
+		int t=position($2);
+		if (t>0)
+		{
+			gen(lod,level-table[t].level,getaddr(t));
+		}
+		else
+		{
+			strcpy(error_info,"");
+			sprintf(error_info,"The variable %s does not exist!",$2);
+			yyerror(error_info);
+		}
+	}ASSIGN bexpr{
+		gen(sto1,0,0);
+	}|
 	ID LM bexpr RM ASSIGN{
 		int t=position($1);
 		if (t>0){

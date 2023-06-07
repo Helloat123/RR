@@ -6,4 +6,6 @@
 	write #x;
 	y=4;
 	write #x;
+	#x=5;
+	write #x;
 }

@@ -4,5 +4,6 @@
 	{
 		x++;
 	}until(x==5);
-	write 5;
+	write x;
 }
+
